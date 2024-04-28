@@ -1,0 +1,21 @@
+﻿@using Microsoft.AspNetCore.Routing
+@using TeamUp.Client.Components
+@using TeamUp.Client.Layout
+
+<Router AppAssembly="typeof(Program).Assembly" AdditionalAssemblies="[typeof(TeamUp.Client._Imports).Assembly]">
+	<Found Context="routeData">
+		<RouteView RouteData="routeData" DefaultLayout="typeof(MainLayout)" />
+	</Found>
+	<NotFound>
+		<LayoutView Layout="typeof(EmptyLayout)">
+			<h3>Page not found</h3>
+			<p>Sorry, there's nothing at this address.</p>
+		</LayoutView>
+	</NotFound>
+</Router>
+
+<div id="blazor-error-ui">
+	An unhandled error has occurred.
+	<a href="" class="reload">Reload</a>
+	<a class="dismiss">🗙</a>
+</div>

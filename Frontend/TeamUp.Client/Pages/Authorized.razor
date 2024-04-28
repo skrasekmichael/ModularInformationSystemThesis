@@ -1,0 +1,9 @@
+﻿@page "/"
+
+<AuthorizeView>
+	<Authorized>
+		<div>
+			Hello <strong>@(context.User.Identity?.Name)</strong>, you have been successfully authorized.
+		</div>
+	</Authorized>
+</AuthorizeView>

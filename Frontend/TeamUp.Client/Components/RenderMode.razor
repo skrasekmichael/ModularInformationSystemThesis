@@ -1,0 +1,19 @@
+﻿@rendermode InteractiveAuto
+
+<span>
+	Render mode: @(renderMode)
+</span>
+
+@code
+{
+	private string renderMode = "SSR (not interactive)";
+
+	protected override void OnAfterRender(bool firstRender)
+	{
+		if (firstRender)
+		{
+			renderMode = OperatingSystem.IsBrowser() ? "WASM" : "Server";
+			StateHasChanged();
+		}
+	}
+}

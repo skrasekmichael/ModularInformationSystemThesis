@@ -1,0 +1,130 @@
+﻿@page "/register"
+
+@rendermode InteractiveAuto
+
+@inherits CancellableComponent
+
+@using System.ComponentModel.DataAnnotations
+@using System.Text.Json
+@using BitzArt.Blazor.Cookies
+@using TeamUp.ApiLayer
+@using TeamUp.Client.Components
+@using TeamUp.Contracts
+@using TeamUp.Contracts.Users
+
+@inject ILogger<Register> Logger
+@inject NavigationManager NavigationManager
+@inject ApiClient ApiClient
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject IToastService ToastService
+
+<PageTitle>Register</PageTitle>
+
+<div class="d-flex flex-dir-column h-screen">
+	<FluentSpacer />
+	<FluentCard Style="max-width: 550px; margin-bottom: 200px" Class="h-auto margin-auto padding-large">
+		<h1 style="margin-bottom: 16px">Register</h1>
+		<FluentDivider />
+		<div style="margin-top: 16px"></div>
+		@if (email is not null)
+		{
+			<p>
+				You have successfully registered, please activate your account via the activation email
+				sent to your email address (<strong>@(email)</strong>) and proceed to <a href="login">Log in</a>.
+			</p>
+		}
+		else
+		{
+			<EditForm Model="@Input" OnValidSubmit="RegisterAsync" FormName="RegisterForm">
+				<CustomValidation @ref="ValidationComponent" />
+				<FluentStack Orientation="Orientation.Vertical">
+					<FluentTextField @bind-value="Input.Email" Immediate="true" AutoComplete="email" Required="true" Placeholder="name@example.com" Label="Email" Class="w-100" />
+					<FluentValidationMessage For="() => Input.Email" Class="text-danger" />
+
+					<FluentTextField @bind-value="Input.Name" Immediate="true" AutoComplete="name" Required="true" Placeholder="username" Label="Name" Class="w-100" />
+					<FluentValidationMessage For="() => Input.Name" Class="text-danger" />
+
+					<FluentTextField @bind-value="Input.Password" Immediate="true" AutoComplete="current-password" Required="true" Placeholder="password" Label="Password" type="password" Class="w-100" />
+					<FluentValidationMessage For="() => Input.Password" Class="text-danger" />
+
+					<FluentTextField @bind-value="Input.ConfirmPassword" Immediate="true" Required="true" Placeholder="password" Label="Confirm Password" type="password" Class="w-100" />
+					<FluentValidationMessage For="() => Input.ConfirmPassword" Class="text-danger" />
+
+					<FluentStack Orientation="Orientation.Horizontal" Style="margin-top: 8px">
+						<FluentButton Type="ButtonType.Submit" Appearance="Appearance.Accent">Register</FluentButton>
+						<FluentAnchor Href="login" Appearance="Appearance.Lightweight">Log in</FluentAnchor>
+					</FluentStack>
+				</FluentStack>
+			</EditForm>
+		}
+	</FluentCard>
+	<FluentSpacer />
+</div>
+
+@code
+{
+	private string? email = null;
+
+	[SupplyParameterFromForm]
+	private RegisterModel Input { get; set; } = new();
+
+	private CustomValidation ValidationComponent { get; set; } = null!;
+
+	protected override async Task OnInitializedAsync()
+	{
+		var state = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+		if (state.User.Identity?.IsAuthenticated == true)
+		{
+			NavigationManager.NavigateTo("/");
+		}
+	}
+
+	public async Task RegisterAsync()
+	{
+		var request = new RegisterUserRequest()
+		{
+			Email = Input.Email,
+				Name = Input.Name,
+			Password = Input.Password
+		};
+
+		var result = await ApiClient.RegisterAsync(request, CTS.Token);
+		if (result.IsFailure)
+		{
+			if (result.Error is ApiValidationError error)
+			{
+				ValidationComponent.DisplayErrors(error.Errors);
+			}
+
+			ToastService.ShowError(result.Error.Message);
+			Input.Password = "";
+			Input.ConfirmPassword = "";
+			return;
+		}
+
+		ToastService.ShowSuccess("Successful registration, please activate your account via email.");
+		email = Input.Email;
+	}
+
+	private sealed class RegisterModel
+	{
+		[Required]
+		[EmailAddress]
+		[Display(Name = "Email")]
+		public string Email { get; set; } = "";
+
+		[Required]
+		[Display(Name = "Username")]
+		public string Name { get; set; } = "";
+
+		[Required]
+		[DataType(DataType.Password)]
+		[Display(Name = "Password")]
+		public string Password { get; set; } = "";
+
+		[DataType(DataType.Password)]
+		[Display(Name = "Confirm password")]
+		[Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
+		public string ConfirmPassword { get; set; } = "";
+	}
+}

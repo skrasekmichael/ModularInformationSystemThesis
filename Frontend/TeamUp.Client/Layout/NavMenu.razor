@@ -1,0 +1,28 @@
+﻿@using BitzArt.Blazor.Cookies
+@using TeamUp.Client.Components
+@using TeamUp.Client.Services
+
+@inject NavigationManager NavigationManager
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject ICookieService CookieService
+
+<div class="navmenu">
+	<input type="checkbox" title="Menu expand/collapse toggle" id="navmenu-toggle" class="navmenu-icon" />
+	<label for="navmenu-toggle" class="navmenu-icon"><FluentIcon Value="@(new Icons.Regular.Size20.Navigation())" Color="Color.Fill" /></label>
+	<nav class="sitenav" aria-labelledby="main-menu" onclick="document.getElementById('navmenu-toggle').click();">
+		<AuthorizeView>
+			<Authorized>
+				<div class="text-center padding-large">@context.User.Identity?.Name</div>
+			</Authorized>
+		</AuthorizeView>
+		<FluentNavMenu Id="main-menu" Width="250" Collapsible="false" Title="Navigation menu">
+			<FluentNavLink Href="teams" Icon="@(new Icons.Regular.Size20.PeopleTeam())" IconColor="Color.Accent">Teams</FluentNavLink>
+			<FluentNavLink Href="events" Icon="@(new Icons.Regular.Size20.Calendar())" IconColor="Color.Accent">Events</FluentNavLink>
+			<FluentNavLink Href="invitations" Icon="@(new Icons.Regular.Size20.MailArrowDown())" IconColor="Color.Accent">My Invitations</FluentNavLink>
+			<FluentNavLink Href="account" Icon="@(new Icons.Regular.Size20.PersonAccounts())" IconColor="Color.Accent">Account</FluentNavLink>
+		</FluentNavMenu>
+		<div class="text-center">
+			<FluentAnchor Href="logout" Appearance="Appearance.Accent" class="w-90">Logout</FluentAnchor>
+		</div>
+	</nav>
+</div>

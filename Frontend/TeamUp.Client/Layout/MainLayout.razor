@@ -1,0 +1,28 @@
+﻿@inherits LayoutComponentBase
+
+<AuthorizeView>
+	<Authorized>
+		<FluentLayout>
+			<FluentHeader>TeamUp</FluentHeader>
+			<FluentStack Class="main w-100" Orientation="Orientation.Horizontal">
+				<NavMenu />
+				<FluentBodyContent Class="body-content">
+					<section class="content">
+						@Body
+					</section>
+				</FluentBodyContent>
+			</FluentStack>
+			<FluentFooter>
+				<span>
+					Copyright &copy; Michael Škrášek 2024 as part of the Master's thesis at <a href="https://www.fit.vut.cz/.en">BUT FIT</a>.
+				</span>
+				<FluentSpacer />
+				<RenderMode />
+			</FluentFooter>
+			<InteractiveComponents />
+		</FluentLayout>
+	</Authorized>
+	<NotAuthorized>
+		NOT AUTHORIZED
+	</NotAuthorized>
+</AuthorizeView>
