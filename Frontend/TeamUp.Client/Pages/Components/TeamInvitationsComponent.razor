@@ -94,6 +94,8 @@
 
 		if (result.Cancelled)
 		{
+			emailInput.Email = "";
+			emailInput.Errors = null;
 			return;
 		}
 
@@ -106,8 +108,17 @@
 		if (invitationResult.IsFailure)
 		{
 			ToastService.ShowError(invitationResult.Error.Message);
+
+			if (invitationResult.Error is ApiValidationError error)
+			{
+				emailInput.Errors = error.Errors;
+			}
+
 			return;
 		}
+
+		emailInput.Email = "";
+		emailInput.Errors = null;
 
 		ToastService.ShowInfo("The invitation request was accepted for processing, invitation should be created in upcoming minutes.");
 		await LoadInvitationsAsync();

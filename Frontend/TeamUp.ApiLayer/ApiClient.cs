@@ -105,7 +105,16 @@ public sealed partial class ApiClient
 	{
 		await InjectAuthToken(request, ct);
 
-		var response = await _client.SendAsync(request, ct);
+		HttpResponseMessage response;
+
+		try
+		{
+			response = await _client.SendAsync(request, ct);
+		}
+		catch (Exception ex)
+		{
+			return new ApiUnexpectedError("Api.UnexpectedError", ex.Message);
+		}
 
 		if (!response.IsSuccessStatusCode)
 		{
@@ -119,7 +128,16 @@ public sealed partial class ApiClient
 	{
 		await InjectAuthToken(request, ct);
 
-		var response = await _client.SendAsync(request, ct);
+		HttpResponseMessage response;
+
+		try
+		{
+			response = await _client.SendAsync(request, ct);
+		}
+		catch (Exception ex)
+		{
+			return new ApiUnexpectedError("Api.UnexpectedError", ex.Message);
+		}
 
 		if (!response.IsSuccessStatusCode)
 		{

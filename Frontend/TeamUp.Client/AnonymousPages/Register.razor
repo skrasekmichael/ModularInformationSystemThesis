@@ -46,7 +46,7 @@
 					<FluentValidationMessage For="() => Input.ConfirmPassword" Class="text-danger" />
 
 					<FluentStack Orientation="Orientation.Horizontal" Style="margin-top: 8px">
-						<FluentButton Type="ButtonType.Submit" Appearance="Appearance.Accent">Register</FluentButton>
+						<FluentButton Loading="processing" Type="ButtonType.Submit" Appearance="Appearance.Accent">Register</FluentButton>
 						<FluentAnchor Href="login" Appearance="Appearance.Lightweight">Log in</FluentAnchor>
 					</FluentStack>
 				</FluentStack>
@@ -59,6 +59,7 @@
 @code
 {
 	private string? email = null;
+	private bool processing = false;
 
 	[SupplyParameterFromForm]
 	private RegisterModel Input { get; set; } = new();
@@ -76,6 +77,7 @@
 
 	public async Task RegisterAsync()
 	{
+		processing = true;
 		var request = new RegisterUserRequest()
 		{
 			Email = Input.Email,
@@ -94,11 +96,13 @@
 			ToastService.ShowError(result.Error.Message);
 			Input.Password = "";
 			Input.ConfirmPassword = "";
+			processing = false;
 			return;
 		}
 
 		ToastService.ShowSuccess("Successful registration, please activate your account via email.");
 		email = Input.Email;
+		processing = false;
 	}
 
 	private sealed class RegisterModel

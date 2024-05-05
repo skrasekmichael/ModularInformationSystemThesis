@@ -3,11 +3,25 @@
 @using System.ComponentModel.DataAnnotations
 
 <FluentDialogBody>
-	<FluentTextField @bind-Value="@Content.Email">Email:</FluentTextField>
+	<EditForm Model="@Content" Style="margin: 1px">
+		<CustomValidation @ref="ValidationComponent" />
+		<FluentTextField @bind-Value="@Content.Email" Required="true" Placeholder="name@example.com" Label="Email" />
+		<FluentValidationMessage For="() => Content.Email" Class="text-danger" />
+	</EditForm>
 </FluentDialogBody>
 
 @code
 {
 	[Parameter]
 	public EmailInput Content { get; set; } = default!;
+
+	private CustomValidation ValidationComponent { get; set; } = null!;
+
+	protected override void OnAfterRender(bool firstRender)
+	{
+		if (Content?.Errors is not null)
+		{
+			ValidationComponent.DisplayErrors(Content.Errors);
+		}
+	}
 }
