@@ -309,3 +309,18 @@ code {
 .bottom-0 {
 	bottom: 0;
 }
+
+
+.reply-type {
+	width: 30px;
+	height: 30px;
+	border-radius: 100%;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	text-align: center;
+}
+
+.reply-type-undefined {
+	background: silver;
+}

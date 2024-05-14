@@ -1,7 +1,5 @@
 ﻿using CommunityToolkit.Mvvm.Messaging;
 
-using Microsoft.Extensions.Logging;
-
 using RailwayResult;
 using RailwayResult.FunctionalExtensions;
 
@@ -105,7 +103,12 @@ public sealed class TeamService
 
 	public Task<Result<TeamResponse>> GetTeamAsync(TeamId teamId, bool forceFetch, CancellationToken ct)
 	{
-		return _cache.GetAsync($"team-{teamId.Value}", () => _client.GetTeamAsync(teamId, ct), TimeSpan.FromMinutes(10), forceFetch, ct);
+		return _cache.GetAsync($"team-{teamId.Value}", () => _client.GetTeamAsync(teamId, ct), TimeSpan.FromMinutes(15), forceFetch, ct);
+	}
+
+	public Task<Result<List<EventTypeResponse>>> GetEventTypesAsync(TeamId teamId, bool forceFetch, CancellationToken ct)
+	{
+		return GetTeamAsync(teamId, forceFetch, ct).Then(team => team.EventTypes);
 	}
 
 	public async Task<Result> ChangeNicknameAsync(TeamId teamId, ChangeNicknameRequest request, CancellationToken ct)
@@ -178,6 +181,31 @@ public sealed class TeamService
 					newOwner.Role = TeamRole.Owner;
 				}
 			}, ct);
+
+			if (team is not null)
+			{
+				_messenger.Send(new TeamDataUpdatedMessage
+				{
+					TeamId = teamId,
+					Team = team
+				});
+			}
+		});
+	}
+
+	public async Task<Result<EventTypeId>> CreateEventTypeAsync(TeamId teamId, UpsertEventTypeRequest request, CancellationToken ct)
+	{
+		var result = await _client.CreateEventTypeAsync(teamId, request, ct);
+		return await result.TapAsync(async eventTypeId =>
+		{
+			var newEventTypeResponse = new EventTypeResponse
+			{
+				Id = eventTypeId,
+				Name = request.Name,
+				Description = request.Description,
+			};
+
+			var team = await _cache.UpdateAsync<TeamResponse>($"team-{teamId.Value}", team => team.EventTypes.Add(newEventTypeResponse), ct);
 
 			if (team is not null)
 			{
