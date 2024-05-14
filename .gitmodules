@@ -1,0 +1,9 @@
+[submodule "Sources/CleanArchitecture"]
+	path = Sources/CleanArchitecture
+	url = https://github.com/skrasekmichael/CleanArchitecture
+[submodule "Sources/ModularMonolith"]
+	path = Sources/ModularMonolith
+	url = https://github.com/skrasekmichael/ModularMonolith
+[submodule "Sources/Frontend"]
+	path = Sources/Frontend
+	url = https://github.com/skrasekmichael/ModularInformationSystemFrontend
