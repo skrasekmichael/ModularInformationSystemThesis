@@ -1,0 +1,284 @@
+% encoding: UTF-8 (you can change it by command iconv, recode or cstocs)
+%------------------------------------------------------------------------------
+% processing: make, make pdf, make clean
+%==============================================================================
+
+%\documentclass[english,zadani]{fitthesis} % IS
+\documentclass[english,zadani,cprint,twoside]{fitthesis} % print
+
+
+%\documentclass[english,zadani]{fitthesis} % for submission to the IS VUT and/or print with color links - links are color
+%\documentclass[english,zadani,print]{fitthesis} % for the black and white print - links are black
+%\documentclass[english,zadani,cprint]{fitthesis} % for the print - links are black, logo is color
+
+% Basic packages are at the bottom of template file fitthesis.cls
+% you can place own packages here
+
+\usepackage{dirtree}
+\usepackage{subcaption}
+\usepackage{tikz}
+\usepackage{pdflscape}
+
+% The Glossaries package can be used for the list of abbreviations - it is necessary to uncomment also below. When compiling from the console also in the Makefile (full version for Perl or lite)
+%\usepackage{glossaries}
+%\usepackage{glossary-superragged}
+%\makeglossaries 
+
+% Setting of a path to the pictures
+%\graphicspath{{obrazky-figures/}{./obrazky-figures/}}
+%\graphicspath{{obrazky-figures/}{../obrazky-figures/}}
+
+%---rm---------------
+\renewcommand{\rmdefault}{lmr}%set Latin Modern Roman as rm
+%---sf---------------
+\renewcommand{\sfdefault}{qhv}%zavede TeX Gyre Heros jako sf
+%---tt------------
+\renewcommand{\ttdefault}{lmtt}% zavede Latin Modern tt jako tt
+
+% disables function of the template which replaces quotation marks
+% to avoid unnecessary replacements in the API descriptions etc.
+\csdoublequotesoff
+
+\ODSAZtrue
+
+\usepackage{url}
+
+% =======================================================================
+% "hyperref" package create clickable links in pdf if you are using pdflatex.
+% Problem is that this package have to be introduced as the last one so it 
+% can not be placed in the template file.
+\ifWis
+\ifx\pdfoutput\undefined % we are not using pdflatex
+\else
+  \usepackage{color}
+  \usepackage[unicode,colorlinks,hyperindex,plainpages=false,pdftex]{hyperref}
+  \definecolor{hrcolor-ref}{RGB}{223,52,30}
+  \definecolor{hrcolor-cite}{HTML}{2F8F00}
+  \definecolor{hrcolor-urls}{HTML}{092EAB}
+  \hypersetup{
+	linkcolor=hrcolor-ref,
+	citecolor=hrcolor-cite,
+	filecolor=magenta,
+	urlcolor=hrcolor-urls
+  }
+  \def\pdfBorderAttrs{/Border [0 0 0] }  %without margins around links
+  \pdfcompresslevel=9
+\fi
+\else % for the print clickable links will be black
+\ifx\pdfoutput\undefined % we are not using pdflatex
+\else
+  \usepackage{color}
+  \usepackage[unicode,colorlinks,hyperindex,plainpages=false,pdftex,urlcolor=black,linkcolor=black,citecolor=black]{hyperref}
+  \definecolor{links}{rgb}{0,0,0}
+  \definecolor{anchors}{rgb}{0,0,0}
+  \def\AnchorColor{anchors}
+  \def\LinkColor{links}
+  \def\pdfBorderAttrs{/Border [0 0 0] } % without margins around links
+  \pdfcompresslevel=9
+\fi
+\fi
+
+% This solves the problems with links which leads after the picture
+\usepackage[all]{hypcap}
+
+% Information about the thesis
+%---------------------------------------------------------------------------
+\projectinfo{
+  % Thesis
+  project={DP},            % thesis type
+  year={2024},             % ryear of submission
+  date=\today,             % submission date
+  % thesis title
+  title.cs={Vývoj modulárního informačního systému pomocí doménově řízeného návrhu},  % thesis title in czech language (according to assignment)
+  title.en={Developing Modular Information System with Domain-Driven Design}, % thesis title in english
+  title.length={15cm}, % setting the length of a block with a thesis title for adjusting a line break (can be defined here or below)
+  %sectitle.length={14.5cm}, % setting the length of a block with a second thesis title for adjusting a line break (can be defined here or below)
+  dectitle.length={14.5cm}, % setting the length of a block with a thesis title above declaration for adjusting a line break (can be defined here or below)
+  % Author
+  author.name={Michael},
+  author.surname={Škrášek},
+  author.title.p={Bc.}, % (optional)
+  %author.title.a={Ph.D.}, % title after the name (optional)
+  % Department
+  department={UIFS}, % fill in appropriate abbreviation of the department according to assignment: UPSY/UIFS/UITS/UPGM
+  % supervisor
+  supervisor.name={Radek},   % supervisor name 
+  supervisor.surname={Burget},   % supervisor surname
+  supervisor.title.p={doc. Ing.},   % title before the name (optional)
+  supervisor.title.a={Ph.D.},    % title after the name (optional)
+  % keywords
+  keywords.cs={doménově řízený návrh, modulární monolit, majestátní monolit, monolit, mikroslužby, čistá architecture, CQRS, modulární informační systém, informační systém, bohatý doménový model, strategický návrh, doména, poddoména, ohraničený kontext, taktický návrh, entity, agregáty, hodnotové objekty, doménové události, integrační událost, doménové služby, transakční outbox vzor, outbox, inbox, architektura informačního systému, distribuovaný monolit, .NET, dotnet, Blazor, ASP.NET Core, Entity Framework Core, MassTransit, Postgres, TeamUp}, %  keywords in czech  language
+  keywords.en={Domain-Driven Design, Modular Monolith, Majestic Monolith, Monolith, Microservices, Clean Architecture, CQRS, Modular Information System, Information System, Rich Domain Model, Strategy Design, Domain, Sub-domain, Bounded Context, Tactical Design, Aggregates, Entities, Value Objects, Domain Events, Integration Event, Domain Services, Transactional Outbox Pattern, Outbox, Inbox, Information System Architecture, Distributed Monolith, .NET, dotnet, Blazor, ASP.NET Core, Entity Framework Core, Postgres, MassTransit, TeamUp}, % keywords in english
+  % Abstrakt / Abstract
+  abstract.cs={Tato diplomová práce se zabývá monolitickými architekturami a doménově řízeným návrhem (angl. Domain-Driven Design) a jejich kombinací při vývoji modulárních informačních systémů. Poskytuje ucelený přehled principů doménově řízeného návrhu a různých monolitických architektur, včetně čisté architektury a modulární monolitické architektury. Poté demonstruje použití těchto vzorů a architektur na ukázkové aplikaci. Práce nabízí pohled na vývoj informačních systémů s využitím populárních přístupů, jako jsou CQRS, čistá architecktura, doménově řízený přístup, modulární monolit a další.}, % abstrakt v českém či slovenském jazyce / abstract in czech or slovak language
+  abstract.en={This thesis deals with monolithic architectures and Domain-Driven Design (DDD) and its combination in the development of modular information systems. It provides comprehensive overview of Domain-Driven Design principles and various monolithic architectures, including Clean Architecture and Modular Monolith architecture. It then demonstrates the use of these patterns and architectures on a demonstration application. The thesis offers insights into the development of information systems using popular approaches such as CQRS, Clean Architecture, Domain-Driven Design, Modular Monolith architecture, and more.}, %abstract in english
+  % Declaration (for thesis in english should be in english; for project practice can be commented out)
+  declaration={I hereby declare that this Master's thesis was prepared as an original work by the author under the supervision of doc. Ing. Radek Burget, Ph.D.
+  I have listed all the literary sources, publications and other sources, which were used during the preparation of this thesis.},
+  % Acknowledgement (optional, ideally in the language of the thesis; comment out for hiding including heading)
+  acknowledgment={I want to thank my supervisor, doc. Ing. Radek Burget, Ph.D., for his help in determining the thesis assignment and valuable feedback on its content.},
+  % Extended abstract (approximately 3 standard pages) - can be defined here or below
+  %extendedabstract={Do tohoto odstavce bude zapsán rozšířený výtah (abstrakt) práce v českém (slovenském) jazyce.},
+  %extabstract.odd={true}, % Should extended abstract start on the odd page?
+  %faculty={FIT}, % FIT/FEKT/FSI/FA/FCH/FP/FAST/FAVU/USI/DEF
+  faculty.cs={Fakulta informačních technologií}, % Faculty in Czech - for use of this entry select DEF above
+  faculty.en={Faculty of Information Technology}, % Faculty in English - for use of this entry select DEF above
+  department.cs={Ústav matematiky}, % Department in Czech - for use of this entry select DEF above or comment it out
+  department.en={Institute of Mathematics} % Department in English - for use of this entry select DEF above or comment it out
+}
+
+% Extended abstract (approximately 3 standard pages) - can be defined here or above
+\extendedabstract{V oblasti architektur informačních systémů je již delší dobu velmi populární architektura mikroslužeb, a i kvůli své popularitě je často využívána v situacích, kdy její použití přináší více problémů a složitostí než užitku. Mnoho autorů zabývajících se softwarovým inženýrstvím zastává názor, že nový systém by se nikdy neměl začínat s architekturou mikroslužeb, ale vždy jako monolit (tzv. \textit{Monolith First}).
+
+V poslední době nabývá na popularitě architektura, která se snaží kombinovat výhody obou přístupů, monolitů i mikroslužeb, a představuje tak střední cestu pro vývoj informačních systémů -- modulární monolit (angl. \textbf{Modular Monolith}). Díky svým modulárním vlastnostem je tato architektura často prezentována jako svatý grál architektur pro rozsáhlé informační systémy s možností snadné konverze na architekturu mikroslužeb. 
+
+Dalším populárním přístupem pro vývoj informačních systémů je doménově řízený návrh (angl. \textbf{Domain-Driven Design}), zaměřující se na návrh rozsáhlých informačních systémů s~komplexními doménami, systematickou dekompozici systému na subsystémy a aplikaci návrhových vzorů při návrhu jejich domén.
+
+Tato diplomová práce se zaobírá studiem monolitických architektur informačních systémů s~důrazem na modularitu a propojení s principy doménově řízeného návrhu. Práce porovnává zvolenou méně modulární architekturu, čistou architekturu (angl. \textbf{Clean Architecture}), a modulární monolit; implementuje demonstrační aplikaci v obou architekturách s použitím principů doménově řízeného návrhu a dalších používaných návrhových vzorů.
+	
+Cílem této práce je přiblížit výhody a nevýhody vybraných architektur, problémy, které je třeba řešit při návrhu a implementaci, problémy pramenící z technologických či jiných důvodů a jak tyto architektury obstávají či selhávají ve srovnání s architekturou mikroslužeb.
+
+Praktická demonstrace vývoje je předvedena na aplikaci pro správu týmu, která navzdory své nevelké doméně obsahuje poměrně složitou logiku s podrobnými autorizačními pravidly a speciální funkcí pro pozvání registrovaných i neregistrovaných uživatelů do týmu. Veškerá implementace je provedena v jazyce C\# na platformě .\textbf{NET}.
+
+Část práce popisující modelování domény této demonstrační aplikace pomocí doménově řízeného návrhu poukazuje na problematické volby při modelování a dekompozici domény, např. modelování kontextů systému (angl. \textbf{Bounded Context}), modelování agregátů, přiřazování a vlastnictví entit apod.
+
+Z částí zabývajících se návrhem a implementací jednotlivých architektur lze vypozorovat další komplikované problémy vyskytující se při vývoji, zejména v modulárním monolitu, jako třeba prosazování konzistence pomocí doménových a integračních událostí (angl. \textbf{Domain Events} \& \textbf{Integration Events}), udržování spolehlivosti systému pomocí návrhového vzoru \textit{outbox}, identifikace modulů, vypořádání se s eventuální konzistencí atd.
+
+Práce také uvádí implementaci frontendové aplikace jako důkaz reálné použitelnosti obou navržených a implementovaných backendových řešení.
+
+Předposlední kapitola vyhodnocuje architektury na základě shromážděných zkušeností z~uplatnění a implementace obou architektur a doménově řízeného návrhu.
+
+Kromě zmíněných architektur, vzorů a postupů se práce zabývá také běžnými tématy v~kontextu vývoje informačních systémů, např. testováním, cachováním apod.
+}
+% Should extended abstract start on the odd page?
+%\extabstractodd{true}
+
+% solves first/last row of the paragraph on the previous/next page
+\clubpenalty=10000
+\widowpenalty=10000
+
+% checklist
+\newlist{checklist}{itemize}{1}
+\setlist[checklist]{label=$\square$}
+
+% If you do not want enlarged spacing for filling of the pages in case of duplex printing, uncomment the following line
+% \raggedbottom
+
+\begin{document}
+  % Typesetting of the title pages
+  % ----------------------------------------------
+  \maketitle
+  % Content
+  % ----------------------------------------------
+  \setlength{\parskip}{2pt}
+
+  {\hypersetup{hidelinks}\tableofcontents}
+  
+  % List of figures and list of tables (if the thesis contains a lot of pictures, it is good)
+  %\ifczech
+  %  \renewcommand\listfigurename{Seznam obrázků}
+  %\fi
+  %{\hypersetup{hidelinks}\listoffigures}
+  
+  %\ifczech
+  %  \renewcommand\listtablename{Seznam tabulek}
+  %\fi
+  % {\hypersetup{hidelinks}\listoftables}
+
+  % List of abbreviations
+  %\ifczech
+  %  \renewcommand*\glossaryname{Seznam zkratek}%
+  %  \renewcommand*\entryname{Zkratka}
+  %  \renewcommand*\descriptionname{Význam}
+  %\fi
+  %\ifenglish
+  %  \renewcommand*\glossaryname{List of abbreviations}%
+  %  \renewcommand*\entryname{Abbreviation}
+  %  \renewcommand*\descriptionname{Meaning}
+  %\fi
+  % Definition of abbreviations - referred from the text e.g. \Gls{TF–IDF}
+  %\newglossaryentry{TF–IDF}
+  %{
+  %  name={TF–IDF},
+  %  description={Term Frequency-Inverse Document Frequency}
+  %}
+  % 
+  %\setglossarystyle{superragged}
+  %\printglossaries
+
+  \ifODSAZ
+    \setlength{\parskip}{0.5\bigskipamount}
+  \else
+    \setlength{\parskip}{0pt}
+  \fi
+
+  % Skip the page in the two-sided mode
+  \iftwoside
+    \cleardoublepage
+  \fi
+
+  % Text prace / Thesis text
+  % ----------------------------------------------
+  \input{chapters}
+
+  % Bibliography
+  % ----------------------------------------------
+
+  \makeatletter
+  \def\@openbib@code{\addcontentsline{toc}{chapter}{Bibliography}}
+  \makeatother
+  \bibliographystyle{bib-styles/Pysny/enplain}
+%  \bibliographystyle{alpha}
+
+  \begin{flushleft}
+  \bibliography{bibliography}
+  \end{flushleft}
+
+  % Skip the page in the two-sided mode
+  \iftwoside
+    \cleardoublepage
+  \fi
+
+  % Appendices
+  % ---------------------------------------------
+  \appendix
+\ifczech
+  \renewcommand{\appendixpagename}{Přílohy}
+  \renewcommand{\appendixtocname}{Přílohy}
+  \renewcommand{\appendixname}{Příloha}
+\fi
+%  \appendixpage
+
+% Skip the page in the two-sided mode
+\iftwoside
+  \cleardoublepage
+\fi
+
+  \ifczech
+%    \section*{Seznam příloh}
+%    \addcontentsline{toc}{section}{Seznam příloh}
+  \else
+%   \section*{List of Appendices}
+%    \addcontentsline{toc}{section}{List of Appendices}
+  \fi
+
+  \startcontents[chapters]
+  \setlength{\parskip}{0pt} 
+  % list of appendices
+  % \printcontents[chapters]{l}{0}{\setcounter{tocdepth}{2}}
+  
+  \ifODSAZ
+    \setlength{\parskip}{0.5\bigskipamount}
+  \else
+    \setlength{\parskip}{0pt}
+  \fi
+  
+ % Skip the page in the two-sided mode
+  \iftwoside
+    \cleardoublepage
+  \fi
+  
+  % Appendices
+  \input{appendices}
+  
+\end{document}
